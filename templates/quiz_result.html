@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <style>
+        .container {
+            margin: 0 auto;
+            padding: 20px;
+            width: 60%;
+            font-family: Arial, sans-serif;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .correct {
+            color: green;
+        }
+
+        .incorrect {
+            color: red;
+        }
+
+        .suggestion {
+            font-style: italic;
+            color: #555;
+        }
+
+        .feedback-summary {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Quiz Results</h2>
+        <p>You answered <b>{{ score }}</b> out of <b>{{ total }}</b> questions correctly.</p>
+
+        <h3>Feedback:</h3>
+        <ul>
+            {% for item in feedback %}
+                <li>
+                    <b>Q:</b> {{ item.question }}<br>
+                    <span class="{{ 'correct' if item.is_correct else 'incorrect' }}">
+                        Your Answer: {{ item.your_answer }}
+                    </span><br>
+                    <b>Correct Answer:</b> {{ item.correct_answer }}<br>
+                    <span class="suggestion">{{ item.suggestion }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h3>Overall Feedback:</h3>
+        <div class="feedback-summary">
+            {% if score <= total / 3 %}
+                <p><b>Performance:</b> Keep practicing! Review the topics thoroughly and focus on understanding key concepts.</p>
+            {% elif score <= total * 2 / 3 %}
+                <p><b>Performance:</b> You're on the right track! Keep practicing to improve your knowledge.</p>
+            {% elif score < total %}
+                <p><b>Performance:</b> Great job! You have a strong understanding. Keep up the good work!</p>
+            {% else %}
+                <p><b>Performance:</b> Excellent! You've mastered the content.</p>
+            {% endif %}
+
+            <p><b>Improvement Tips:</b></p>
+            <ul>
+                {% for item in feedback %}
+                    {% if not item.is_correct %}
+                        <li>For "<b>{{ item.question }}</b>", you can review the topic on "{{ item.correct_answer }}" for better understanding.</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <a href="{{ url_for('quiz_page') }}">Retake Quiz</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Summary of Your PDF</h2>
+        <div class="summary">
+            <p>{{ summary }}</p>  <!-- Display the summarized text -->
+        </div>
+        <div style="margin-top: 20px;">
+            <a href="/">Upload Another PDF</a> |
+            <a href="/ask">Ask Questions</a>
+            <a href="/quiz">Take the Quiz</a>
+        </div>
+        
+
+        <div class="images">
+            <h3>Extracted Images</h3>
+            {% for image_path in image_paths %}
+                <img src="{{ image_path }}" alt="Extracted Image" width="300" style="margin-bottom: 20px;">
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

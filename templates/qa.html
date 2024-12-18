@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask Questions</title>
+    <style>
+        body {
+            background: url('https://essayclick.net/static/img/regular/summary1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .answer {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Ask Questions About the PDF</h2>
+        <form method="post">
+            <input type="text" name="question" placeholder="Type your question here..." required>
+            <button type="submit">Get Answer</button>
+        </form>
+
+        {% if question %}
+            <h3>Question: {{ question }}</h3>
+            {% for answer in answers %}
+                <p class="answer">{{ answer }}</p>
+            {% endfor %}
+        {% elif error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <a href="/">Upload Another PDF</a>
+    </div>
+</body>
+</html>

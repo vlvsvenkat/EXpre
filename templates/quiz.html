@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin: 20px auto;
+            padding: 20px;
+            width: 60%;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+
+        p {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        label {
+            display: block;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .submit-all {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Quiz</h1>
+    <form method="POST" action="{{ url_for('quiz_page') }}">
+        {% for question in questions %}
+        <div class="question-block">
+            <!-- Display the question -->
+            <h3>Question {{ loop.index }}:</h3>
+            <p>{{ question['question'] }}</p>
+    
+            <!-- Store the question index as a constant for use in the radio buttons -->
+            {% set question_name = 'question_' ~ loop.index0 %}  <!-- Changed to use 0-based index -->
+            
+            <!-- Use the constant question_name in the radio button name attribute -->
+            {% for option in question['options'] %}
+            <label>
+                <input type="radio" name="{{ question_name }}" value="{{ option }}">
+                {{ option }}
+            </label><br>
+            {% endfor %}
+        </div>
+        <hr>
+        {% endfor %}
+        <div class="submit-all">
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+    
+</body>
+
+</html>
