@@ -42,7 +42,6 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 # Global variable to store extracted PDF content
 document_text = ""
 
-
 # ------------------ Helper Functions ------------------ #
 
 def allowed_file(filename):
@@ -76,7 +75,8 @@ def summarize_text(text, chunk_size=300):
             except Exception as e:
                 summaries.append(f"Error: {e}")
 
-    return " ".join(summaries)
+    organized_summary = "\n\n".join([f"Chunk {i+1} Summary:\n{summary}" for i, summary in enumerate(summaries)])
+    return organized_summary
 
 
 def extract_tables_from_pdf(pdf_path):
@@ -85,10 +85,10 @@ def extract_tables_from_pdf(pdf_path):
         tables = camelot.read_pdf(pdf_path, pages="all", flavor="stream")
         table_summaries = []
 
-        for table in tables:
+        for i, table in enumerate(tables):
             table_data = table.df.to_string(index=False, header=False)
             summary = summarize_text(table_data)
-            table_summaries.append(summary)
+            table_summaries.append(f"Table {i+1} Summary:\n{summary}")
 
         return table_summaries
     except Exception:
@@ -286,7 +286,6 @@ def quiz_page():
         overall_feedback = "Good job!" if correct_answers >= len(session['quiz_questions']) // 2 else "Keep practicing!"
 
         return render_template('quiz_result.html', score=correct_answers, total=len(session['quiz_questions']), feedback=feedback, overall_feedback=overall_feedback)
-
 
 
 if __name__ == '__main__':
