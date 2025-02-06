@@ -72,18 +72,15 @@
     <form method="POST" action="{{ url_for('quiz_page') }}">
         {% for question in questions %}
         <div class="question-block">
-            <!-- Display the question -->
             <h3>Question {{ loop.index }}:</h3>
             <p>{{ question['question'] }}</p>
-    
-            <!-- Store the question index as a constant for use in the radio buttons -->
-            {% set question_name = 'question_' ~ loop.index0 %}  <!-- Changed to use 0-based index -->
+
+            {% set question_name = 'question_' ~ loop.index0 %}
             
-            <!-- Use the constant question_name in the radio button name attribute -->
-            {% for option in question['options'] %}
+            {% for key, value in question['options'].items() %}
             <label>
-                <input type="radio" name="{{ question_name }}" value="{{ option }}">
-                {{ option }}
+                <input type="radio" name="{{ question_name }}" value="{{ key }}">
+                 {{ value }}
             </label><br>
             {% endfor %}
         </div>
@@ -93,7 +90,6 @@
             <button type="submit">Submit</button>
         </div>
     </form>
-    
 </body>
 
 </html>
