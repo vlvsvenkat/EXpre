@@ -27,7 +27,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", str(uuid.uuid4()))  # Fallback to a randomly generated UUID if not found in .env
 
 # Gemini API credentials
-GEMINI_API_KEY = "AIzaSyBSko2EMrZ6Oe15NsgnY5NB1jHeINQf1w0"  # Replace with your API key
+GEMINI_API_KEY = "AIzaSyBQU1ewtLWvF-jN4GRWTiynZ6n-4i7bbAk"  # Replace with your API key
 GEMINI_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent" # Fallback if not set
 
 # Allowed file extensions
@@ -151,7 +151,7 @@ def ask_gemini(question, document_text):
         return f"Error: {str(e)}"
 
 
-def generate_quiz_questions_via_gemini(text, num_questions=10):  # Set to 10
+def generate_quiz_questions_via_gemini(text, num_questions=10):
     headers = {"Content-Type": "application/json"}
     prompt = (
         f"Generate {num_questions} multiple-choice questions (MCQs) based on the following text:\n"
@@ -163,6 +163,7 @@ def generate_quiz_questions_via_gemini(text, num_questions=10):  # Set to 10
         "Format the response like this:\n"
         "Q1: <Question>\n(A) Option1\n(B) Option2\n(C) Option3\n(D) Option4\nAnswer: OptionLabel"
     )
+
     payload = {"contents": [{"parts": [{"text": prompt}]}]}
 
     try:
@@ -173,29 +174,50 @@ def generate_quiz_questions_via_gemini(text, num_questions=10):  # Set to 10
             params={"key": GEMINI_API_KEY}
         )
 
+        # Debugging: Print API Response
+        print("Gemini API Response:", response.text)
+
         if response.status_code == 200:
             response_json = response.json()
-            questions_text = response_json['candidates'][0]['content']['parts'][0]['text']
+            questions_text = response_json.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', "")
 
+            if not questions_text:
+                return [{"question": "Error: Empty response from Gemini.", "options": {}, "answer": "Error"}]
+
+            # Parse questions
             questions = []
-            for question_block in questions_text.split('\n\n'):
-                question_data = {}
+            question_blocks = questions_text.split('\n\n')
+
+            for question_block in question_blocks:
                 lines = question_block.split('\n')
-                if len(lines) >= 5:
-                    question_data['question'] = lines[0].strip()
-                    options = {chr(65 + i): lines[i+1].strip() for i in range(4)}
-                    question_data['options'] = options
-                    question_data['answer'] = lines[5].split(':')[1].strip().replace('(', '').replace(')', '')
-                    questions.append(question_data)
+                if len(lines) >= 6:
+                    question = lines[0].strip()
+                    options = {
+                        "A": lines[1].strip(),
+                        "B": lines[2].strip(),
+                        "C": lines[3].strip(),
+                        "D": lines[4].strip()
+                    }
+                    answer = lines[5].split(":")[-1].strip().replace("(", "").replace(")", "")
+
+                    if answer not in options:
+                        answer = "A"  # Default to A if something goes wrong
+
+                    questions.append({
+                        "question": question,
+                        "options": options,
+                        "answer": answer
+                    })
 
             return questions
 
         else:
-            return [{"question": "Error generating questions.", "options": {}, "answer": "Error"}]
+            return [{"question": f"Error: API returned {response.status_code}", "options": {}, "answer": "Error"}]
 
     except Exception as e:
         print(f"Error generating questions: {str(e)}")
         return [{"question": "Error generating questions.", "options": {}, "answer": "Error"}]
+
 
 # ------------------ Routes ------------------ #
 
